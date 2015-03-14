@@ -1,0 +1,25 @@
+{
+  "name": "pdfMake",
+  "version": "1.0.0",
+  "description": "",
+  "main": "a.js",
+  "dependencies": {
+    "firebase": "^2.2.2",
+    "pdfkit": "^0.7.0",
+    "request": "^2.53.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mmuenster/pdfMake.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mmuenster/pdfMake/issues"
+  },
+  "homepage": "https://github.com/mmuenster/pdfMake"
+}

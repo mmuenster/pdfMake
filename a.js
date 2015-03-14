@@ -1,75 +1,38 @@
-var PDFDocument= require('pdfkit');
-var fs = require('fs');
-var doc = new PDFDocument({ size:[279, 68], margin:1}); //{ size:[280, 68]}
+var i=Number(process.argv[2]);
 
-doc.pipe(fs.createWriteStream('output.pdf'));
+if (i<95)
+	asciiCode = String.fromCharCode(i + 32);
+else if (i=95)
+	asciiCode = 'À';
+else if (i=96)
+	asciiCode = '\xC1';
+else if (i=97)
+	asciiCode = '\xC2';
+else if (i=98)
+	asciiCode = '\xC3';
+else if (i=99)
+	asciiCode = '\xC4';
+else if (i=100)
+	asciiCode = '\xC5';
+else if (i=101)
+	asciiCode = '\xC6';
+else if (i=102)
+	asciiCode = '\xC7';
+else if (i=103)
+	asciiCode = '\xC8';
+else if (i=104)
+	asciiCode = '\xC9';
+else if (i=105)
+	asciiCode = '\xCA';
+else if (i=106)
+	asciiCode = '\xCB';
+else if (i=107)
+	asciiCode = '\xCC';
 
+console.log(i);
+console.log(asciiCode);
+console.log(asciiCode.charAt(0));
+console.log(asciiCode.charCodeAt(0));
+console.log('ÌSP15-Ç{|}~ÃÄÅÆÇ$Î'.charAt(0))
 
-doc.font('ETNCode128W.ttf');
-doc.fontSize(7);
-doc.text('*SP15-001234*', 6, 1);
-doc.moveDown(0.5)
-doc.font('Helvetica');
-doc.fontSize(7);
-doc.text('SP15-001234');
-doc.fontSize(7);
-doc.text('A1            L1-3');
-doc.text('H&E');
-doc.text('Test, Patient');
-doc.fontSize(4);
-doc.fontSize(7);
-doc.text('08.01.2014')
-doc.fontSize(5);
-doc.text('Avero Diagnostics');
-
-doc.font('IDAutomationSC128XS.ttf');
-doc.fontSize(7);
-doc.text('*SP15-001234*', 78, 1);
-doc.moveDown(0.5)
-doc.font('Helvetica');
-doc.fontSize(7);
-doc.text('SP15-001234');
-doc.fontSize(7);
-doc.text('A1            L1-3');
-doc.text('H&E');
-doc.text('Test, Patient');
-doc.fontSize(4);
-doc.fontSize(7);
-doc.text('08.01.2014')
-doc.fontSize(5);
-doc.text('Avero Diagnostics');
-
-doc.font('IDAutomationSC128XS.ttf');
-doc.fontSize(7);
-doc.text('*SP15-001234*', 149, 1);
-doc.moveDown(0.5)
-doc.font('Helvetica');
-doc.fontSize(7);
-doc.text('SP15-001234');
-doc.fontSize(7);
-doc.text('A1            L1-3');
-doc.text('H&E');
-doc.text('Test, Patient');
-doc.fontSize(4);
-doc.fontSize(7);
-doc.text('08.01.2014')
-doc.fontSize(5);
-doc.text('Avero Diagnostics');
-
-doc.font('IDAutomationSC128XS.ttf');
-doc.fontSize(7);
-doc.text('*SP15-001234*', 217, 1);
-doc.moveDown(0.5)
-doc.font('Helvetica');
-doc.fontSize(7);
-doc.text('SP15-001234');
-doc.fontSize(7);
-doc.text('A1            L1-3');
-doc.text('H&E');
-doc.text('Test, Patient');
-doc.fontSize(4);
-doc.fontSize(7);
-doc.text('08.01.2014')
-doc.fontSize(5);
-doc.text('Avero Diagnostics');
-doc.end();
+console.log('Hello ',asciiCode);
