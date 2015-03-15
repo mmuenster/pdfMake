@@ -44,7 +44,7 @@ request('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', functio
           var datext = code128Base.concat(checkDigit,stopCode);
 
           console.log(datext);
-          var barcodeFont = 'Helvetica';
+          var barcodeFont = 'etn128w-a.ttf';
       response.writeHead(200);
       doc.pipe(response);
 
@@ -65,6 +65,7 @@ request('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', functio
       doc.fontSize(5);
       doc.text('Avero Diagnostics');
       doc.fontSize(14)
+      doc.font(barcodeFont);
       doc.text(datext, 102,10)
 
       doc.end();
