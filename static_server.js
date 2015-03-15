@@ -6,7 +6,20 @@ var http = require("http"),
     fs = require("fs")
     port = process.argv[2] || 8888;
 
- 
+var codeBTable = { "95":"À", "À":95,
+                   "96":"Á", "Á":96, 
+                   "97":"Â", "Â":97,
+                   "98":"Ã", "Ã":98,
+                   "99":"Ä", "Ä":99,
+                   "100":"Å", "Å":100,
+                   "101":"Æ", "Æ":101,
+                   "102":"Ç", "Ç":102,
+                   "103":"È", "È":103,
+                   "104":"É", "É":104,
+                   "105":"Ê", "Ê":105,
+                   "106":"Ë", "Ë":106  };
+
+ console.log(codeBTable['!'], codeBTable["53"])
 http.createServer(function(request, response) {
 
 var request = require("request");
@@ -26,9 +39,12 @@ request('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', functio
           var stopCode = 'Ë';
 
           console.log(prefixAndHyphen);
-          var datext = startCode.concat(prefixAndHyphen,setCSwitchCode,caseNumValue1,caseNumValue2,caseNumValue3,'/',stopCode); //SP15-ÇÂ5bX
+          var code128Base = startCode.concat(prefixAndHyphen,setCSwitchCode,caseNumValue1,caseNumValue2,caseNumValue3); //SP15-ÇÂ5bX
+          var checkDigit = getCheckDigit(code128Base);
+          var datext = code128Base.concat(checkDigit,stopCode);
+
           console.log(datext);
-          var barcodeFont = 'etn128w-a.ttf';
+          var barcodeFont = 'Helvetica';
       response.writeHead(200);
       doc.pipe(response);
 
@@ -48,7 +64,8 @@ request('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', functio
       doc.text(queueCurrent.collectionDate)
       doc.fontSize(5);
       doc.text('Avero Diagnostics');
-
+      doc.fontSize(14)
+      doc.text(datext, 102,10)
 
       doc.end();
 
@@ -59,38 +76,35 @@ request('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', functio
 console.log("Static file server running at\n  => http://localhost:" + port + "/\nCTRL + C to shutdown");
 
 function setCCode(i) {
-var asciiCode= "";
 
-if (i<95)
-  asciiCode = String.fromCharCode(i + 32);
-else if (i=95)
-  asciiCode = '\xC0';
-else if (i=96)
-  asciiCode = '\xC1';
-else if (i=97)
-  asciiCode = '\xC2';
-else if (i=98)
-  asciiCode = '\xC3';
-else if (i=99)
-  asciiCode = 'Ä';
-else if (i=100)
-  asciiCode = '\xC5';
-else if (i=101)
-  asciiCode = '\xC6';
-else if (i=102)
-  asciiCode = '\xC7';
-else if (i=103)
-  asciiCode = '\xC8';
-else if (i=104)
-  asciiCode = '\xC9';
-else if (i=105)
-  asciiCode = '\xCA';
-else if (i=106)
-  asciiCode = '\xCB';
-else if (i=107)
-  asciiCode = '\xCC';
+    if (i<95) { 
+      return String.fromCharCode(i + 32);
+    }
+    else {
+      return codeBTable[i];
+    }
+}
 
-console.log(asciiCode);
-
-return asciiCode;
+function getCheckDigit(code) {
+  console.log(code);
+  var sum = 0;
+    for(var i=0; i<code.length; i++) {
+      console.log(i, code.charCodeAt(i), codeBTable[code.charAt(i)]);
+      if (code.charCodeAt(i)<95) {
+        if (i==0) {
+          sum = code.charCodeAt(i)-32;
+        } else {
+          sum += (code.charCodeAt(i)-32)*i
+        }
+      } else {
+        if(i>0) {
+          sum += codeBTable[code.charAt(i)]*i;
+        } else {
+          sum += codeBTable[code.charAt(i)];
+        }
+      }
+     console.log(i,sum) 
+  }
+  console.log(sum, sum%103, setCCode(sum%103));
+  return setCCode(sum%103);
 }

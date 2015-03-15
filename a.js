@@ -32,7 +32,7 @@ else if (i=107)
 console.log(i);
 console.log(asciiCode);
 console.log(asciiCode.charAt(0));
-console.log(asciiCode.charCodeAt(0));
+alert(asciiCode.charCodeAt(0));
 console.log('ÌSP15-Ç{|}~ÃÄÅÆÇ$Î'.charAt(0))
 
 console.log('Hello ',asciiCode);
