@@ -1,8 +1,8 @@
 {
   "name": "pdfMake",
   "version": "1.0.0",
-  "description": "",
-  "main": "a.js",
+  "description": "Slide Label pdf generator",
+  "main": "server.js",
   "dependencies": {
     "express": "^4.12.2",
     "firebase": "^2.2.2",
