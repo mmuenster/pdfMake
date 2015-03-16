@@ -8,8 +8,58 @@ app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
-	console.log(request.body)
-	response.send("Yo mamma dude!", request.body)
+	var FBrequest = require("request");
+	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', function(error, head, body) {
+		var queueCurrent = JSON.parse(body)
+		console.log(queueCurrent.slides.length);
+
+		var doc = new PDFDocument({ size:[288, 72], margin:1}); 
+		var startCode = 'É';
+		var setCSwitchCode = 'Ä';
+		var prefixAndHyphen = queueCurrent.caseNum.substring(0,queueCurrent.caseNum.search('-')+1);
+		var justCaseNum = queueCurrent.caseNum.substring(queueCurrent.caseNum.search('-') + 1, queueCurrent.caseNum.length);
+		var caseNumValue1 = setCCode(Number(justCaseNum.substring(0,2)));
+		var caseNumValue2 = setCCode(Number(justCaseNum.substring(2,4)));
+		var caseNumValue3 = setCCode(Number(justCaseNum.substring(4,6)));
+		console.log(caseNumValue1,caseNumValue2,caseNumValue3);
+		var stopCode = 'Ë';
+
+		console.log(prefixAndHyphen);
+		var code128Base = startCode.concat(prefixAndHyphen,setCSwitchCode,caseNumValue1,caseNumValue2,caseNumValue3); //SP15-ÇÂ5bX
+		var checkDigit = getCheckDigit(code128Base);
+		var datext = code128Base.concat(checkDigit,stopCode);
+
+		console.log(datext);
+		var barcodeFont = 'etn128w-a.ttf';
+
+		response.status(200);
+		response.type('application/pdf');
+
+		doc.pipe(response);
+
+		doc.font(barcodeFont);  //'MattMuensterCode128.ttf'  Works when printed large.
+		doc.fontSize(11.36);  //The Etel font requires printing at this size only for proper scanning on 203dpi thermal printers
+		doc.text(datext); 
+		doc.moveDown(0.2);
+		doc.font('Helvetica');
+		doc.fontSize(7);
+		doc.text(queueCurrent.caseNum, 9);
+		doc.fontSize(7);
+		doc.text(queueCurrent.slides[0][0] + '        ' + queueCurrent.slides[0][1]);
+		doc.text(queueCurrent.slides[0][2]);
+		doc.text(queueCurrent.patientName);
+		doc.fontSize(4);
+		doc.fontSize(7);
+		doc.text(queueCurrent.collectionDate)
+		doc.fontSize(5);
+		doc.text('Avero Diagnostics');
+		doc.fontSize(14)
+		doc.font(barcodeFont);
+		doc.text(datext, 102,10)
+
+		doc.end();
+		//response.send("This is it!");
+  });
 });
 
 app.put('/', function (request, response) {
