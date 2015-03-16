@@ -7,6 +7,10 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 
+app.get("/", function(request,response) {
+	response.send("This is it!", Date.now());
+});
+
 app.get('/key/:key', function (request, response) {
 	var FBrequest = require("request");
 	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting/'+request.param("key")+'.json', function(error, head, body) {
