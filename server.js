@@ -1,11 +1,22 @@
+var PDFDocument= require('pdfkit');
 var express = require('express')
+var bodyParser = require('body-parser');
+
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
+app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
-  response.send('yo mamma dude!');
+	console.log(request.body)
+	response.send("Yo mamma dude!")
 });
+
+app.put('/', function (req, res) {
+  console.log(req.body.A);
+
+  res.send('Got a put request');
+})
 
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
@@ -46,3 +57,15 @@ function getCheckDigit(code) {
   return setCCode(sum%103);
 }
 
+var codeBTable = { "95":"À", "À":95,
+                   "96":"Á", "Á":96, 
+                   "97":"Â", "Â":97,
+                   "98":"Ã", "Ã":98,
+                   "99":"Ä", "Ä":99,
+                   "100":"Å", "Å":100,
+                   "101":"Æ", "Æ":101,
+                   "102":"Ç", "Ç":102,
+                   "103":"È", "È":103,
+                   "104":"É", "É":104,
+                   "105":"Ê", "Ê":105,
+                   "106":"Ë", "Ë":106  };

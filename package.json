@@ -4,6 +4,7 @@
   "description": "Slide Label pdf generator",
   "main": "server.js",
   "dependencies": {
+    "body-parser": "^1.12.1",
     "express": "~3.2.6",
     "firebase": "^2.2.2",
     "pdfkit": "^0.7.0",
