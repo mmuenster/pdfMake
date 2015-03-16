@@ -7,88 +7,97 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 
-app.get('/', function(request, response) {
+app.get('/key/:key', function (request, response) {
 	var FBrequest = require("request");
-	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting.json', function(error, head, body) {
-		var queueCurrent = JSON.parse(body)
-		console.log(queueCurrent.slides.length);
+	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting/'+request.param("key")+'.json', function(error, head, body) {
+		body = JSON.parse(body);
+		//console.log(body);
 
-		var doc = new PDFDocument({ size:[288, 72], margin:1}); 
-		var startCode = 'É';
-		var setCSwitchCode = 'Ä';
-		var prefixAndHyphen = queueCurrent.caseNum.substring(0,queueCurrent.caseNum.search('-')+1);
-		var justCaseNum = queueCurrent.caseNum.substring(queueCurrent.caseNum.search('-') + 1, queueCurrent.caseNum.length);
-		var caseNumValue1 = setCCode(Number(justCaseNum.substring(0,2)));
-		var caseNumValue2 = setCCode(Number(justCaseNum.substring(2,4)));
-		var caseNumValue3 = setCCode(Number(justCaseNum.substring(4,6)));
-		console.log(caseNumValue1,caseNumValue2,caseNumValue3);
-		var stopCode = 'Ë';
-
-		console.log(prefixAndHyphen);
-		var code128Base = startCode.concat(prefixAndHyphen,setCSwitchCode,caseNumValue1,caseNumValue2,caseNumValue3); //SP15-ÇÂ5bX
-		var checkDigit = getCheckDigit(code128Base);
-		var datext = code128Base.concat(checkDigit,stopCode);
-
-		console.log(datext);
 		var barcodeFont = 'etn128w-a.ttf';
+		body.encodedCaseNum = encodeCaseNum(body.caseNum);
+
+		console.log(body.encodedCaseNum);
+		console.log(body.caseNum);
 
 		response.status(200);
 		response.type('application/pdf');
 
+		var doc = new PDFDocument({ size:[288, 72], margin:1}); 
 		doc.pipe(response);
+		var pages = Math.floor(body.slides.length/4) + Math.ceil((body.slides.length%4)/4);
+		//console.log("pages=", pages)
 
-		doc.font(barcodeFont);  //'MattMuensterCode128.ttf'  Works when printed large.
-		doc.fontSize(11.36);  //The Etel font requires printing at this size only for proper scanning on 203dpi thermal printers
-		doc.text(datext); 
-		doc.moveDown(0.2);
-		doc.font('Helvetica');
-		doc.fontSize(7);
-		doc.text(queueCurrent.caseNum, 9);
-		doc.fontSize(7);
-		doc.text(queueCurrent.slides[0][0] + '        ' + queueCurrent.slides[0][1]);
-		doc.text(queueCurrent.slides[0][2]);
-		doc.text(queueCurrent.patientName);
-		doc.fontSize(4);
-		doc.fontSize(7);
-		doc.text(queueCurrent.collectionDate)
-		doc.fontSize(5);
-		doc.text('Avero Diagnostics');
-		doc.fontSize(14)
-		doc.font(barcodeFont);
-		doc.text(datext, 102,10)
+		for(var j=0; j<pages; j++) {
+			if (j>0) { doc.addPage(); }
+			var pageLength = (j+1) < pages  ? 4 : (body.slides.length-(j*4)<4 ? (body.slides.length - j*4) : 4);
+			
+			//console.log("pageLength=", pageLength);
+
+			for(var i=0; i<pageLength; i++) {
+				doc.font(barcodeFont);  
+				doc.fontSize(11.36);  //The Etel font requires printing at this size only for proper scanning on 203dpi thermal printers
+				doc.text(body.encodedCaseNum, 72*i, 0); 
+				doc.moveDown(0.2);
+				doc.font('Helvetica');
+				doc.fontSize(7);
+				doc.text(body.caseNum, 72*i+3);
+				doc.fontSize(7);
+				doc.text(body.slides[j*4 + i][0] + '          ' + body.slides[j*4 + i][1]);
+				doc.text(body.slides[j*4 + i][2]);
+				doc.text(body.patientName);
+				doc.fontSize(4);
+				doc.fontSize(7);
+				doc.text(body.collectionDate)
+				doc.fontSize(6);
+				doc.text('Avero Diagnostics');
+			}
+		}
+
 
 		doc.end();
-		//response.send("This is it!");
-  });
-});
-
-app.put('/', function (request, response) {
-  console.log(request.body.A);
-
-  response.send('Got a put request', request.body);
+	});
 })
+
 
 app.listen(app.get('port'), function() {
   console.log("Node app is running at localhost:" + app.get('port'))
 });
 
+function encodeCaseNum(casenum) {
+		var startCode = 'É';
+		var setCSwitchCode = 'Ä';
+		var prefixAndHyphen = casenum.substring(0,casenum.search('-')+1);
+		var justCaseNum = casenum.substring(casenum.search('-') + 1, casenum.length);
+		var caseNumValue1 = setCCode(Number(justCaseNum.substring(0,2)));
+		var caseNumValue2 = setCCode(Number(justCaseNum.substring(2,4)));
+		var caseNumValue3 = setCCode(Number(justCaseNum.substring(4,6)));
+		//console.log(caseNumValue1,caseNumValue2,caseNumValue3);
+		var stopCode = 'Ë';
+
+		//console.log(prefixAndHyphen);
+		var code128Base = startCode.concat(prefixAndHyphen,setCSwitchCode,caseNumValue1,caseNumValue2,caseNumValue3); 
+		var checkDigit = getCheckDigit(code128Base);
+		return code128Base.concat(checkDigit,stopCode);
+}
 
 function setCCode(i) {
 
-    if (i<95) { 
+	console.log(i);
+    if (i==0) {
+      return 'Ì';
+    } else if (i<95) { 
       return String.fromCharCode(i + 32);
-    }
-    else {
+    } else {
       return codeBTable[i];
     }
 }
 
 function getCheckDigit(code) {
-  console.log(code);
+ console.log(code);
   var sum = 0;
     for(var i=0; i<code.length; i++) {
       console.log(i, code.charCodeAt(i), codeBTable[code.charAt(i)]);
-      if (code.charCodeAt(i)<95) {
+      if (code.charCodeAt(i)<127) {
         if (i==0) {
           sum = code.charCodeAt(i)-32;
         } else {
@@ -107,6 +116,7 @@ function getCheckDigit(code) {
   return setCCode(sum%103);
 }
 
+
 var codeBTable = { "95":"À", "À":95,
                    "96":"Á", "Á":96, 
                    "97":"Â", "Â":97,
@@ -118,4 +128,5 @@ var codeBTable = { "95":"À", "À":95,
                    "103":"È", "È":103,
                    "104":"É", "É":104,
                    "105":"Ê", "Ê":105,
-                   "106":"Ë", "Ë":106  };
+                   "106":"Ë", "Ë":106,
+                   "204":"Ì", "Ì":0 };
