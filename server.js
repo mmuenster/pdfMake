@@ -7,7 +7,7 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 
-app.get("/", function(request,response) {
+app.get('/', function (request,response) {
 	response.send("This is it!", Date.now());
 });
 
