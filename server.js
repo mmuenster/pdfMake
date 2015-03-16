@@ -9,13 +9,13 @@ app.use(bodyParser.json());
 
 app.get('/', function(request, response) {
 	console.log(request.body)
-	response.send("Yo mamma dude!")
+	response.send("Yo mamma dude!", req.body)
 });
 
 app.put('/', function (req, res) {
   console.log(req.body.A);
 
-  res.send('Got a put request');
+  res.send('Got a put request', req.body);
 })
 
 app.listen(app.get('port'), function() {
