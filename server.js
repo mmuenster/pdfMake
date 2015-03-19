@@ -16,7 +16,10 @@ app.get('/key/:key', function (request, response) {
 	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting/'+request.param("key")+'.json', function(error, head, body) {
 		body = JSON.parse(body);
 		//console.log(body);
-
+		if(body.slides==undefined) {
+			body.slides=[];
+		}
+		
 		var barcodeFont = 'etn128w-a.ttf';
 		body.encodedCaseNum = encodeCaseNum(body.caseNum);
 
