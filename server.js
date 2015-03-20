@@ -15,7 +15,11 @@ app.get('/key/:key', function (request, response) {
 	var FBrequest = require("request");
 	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting/'+request.param("key")+'.json', function(error, head, body) {
 		body = JSON.parse(body);
-		//console.log(body);
+		if(body==null) {
+			response.send(404);
+			return
+		}
+
 		if(body.slides==undefined) {
 			body.slides=[];
 		}
@@ -23,7 +27,7 @@ app.get('/key/:key', function (request, response) {
 		var barcodeFont = 'etn128w-a.ttf';
 		body.encodedCaseNum = encodeCaseNum(body.caseNum);
 
-		console.log(body.encodedCaseNum);
+		//console.log(body.encodedCaseNum);
 		console.log(body.caseNum);
 
 		response.status(200);
@@ -89,7 +93,7 @@ function encodeCaseNum(casenum) {
 
 function setCCode(i) {
 
-	console.log(i);
+	//console.log(i);
     if (i==0) {
       return 'Ì';
     } else if (i<95) { 
@@ -100,10 +104,10 @@ function setCCode(i) {
 }
 
 function getCheckDigit(code) {
- console.log(code);
+ //console.log(code);
   var sum = 0;
     for(var i=0; i<code.length; i++) {
-      console.log(i, code.charCodeAt(i), codeBTable[code.charAt(i)]);
+      //console.log(i, code.charCodeAt(i), codeBTable[code.charAt(i)]);
       if (code.charCodeAt(i)<127) {
         if (i==0) {
           sum = code.charCodeAt(i)-32;
@@ -117,9 +121,9 @@ function getCheckDigit(code) {
           sum += codeBTable[code.charAt(i)];
         }
       }
-     console.log(i,sum) 
+     //console.log(i,sum) 
   }
-  console.log(sum, sum%103, setCCode(sum%103));
+  //console.log(sum, sum%103, setCCode(sum%103));
   return setCCode(sum%103);
 }
 
