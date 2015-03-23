@@ -43,15 +43,15 @@ app.get('/key/:key', function (request, response) {
 			var pageLength = (j+1) < pages  ? 4 : (body.slides.length-(j*4)<4 ? (body.slides.length - j*4) : 4);
 			
 			//console.log("pageLength=", pageLength);
-
+			offset=5;
 			for(var i=0; i<pageLength; i++) {
 				doc.font(barcodeFont);  
 				doc.fontSize(11.36);  //The Etel font requires printing at this size only for proper scanning on 203dpi thermal printers
-				doc.text(body.encodedCaseNum, 72*i, 0); 
+				doc.text(body.encodedCaseNum, 72*i + offset, 0); 
 				doc.moveDown(0.2);
 				doc.font('Helvetica');
 				doc.fontSize(7);
-				doc.text(body.caseNum, 72*i+3);
+				doc.text(body.caseNum, 72*i + offset + 3);
 				doc.fontSize(7);
 				doc.text(body.slides[j*4 + i][0] + '          ' + body.slides[j*4 + i][1]);
 				doc.text(body.slides[j*4 + i][2]);
