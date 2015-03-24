@@ -7,10 +7,6 @@ var app = express();
 app.set('port', (process.env.PORT || 5000));
 app.use(bodyParser.json());
 
-app.get('/', function (request,response) {
-	response.send("This is it!", Date.now());
-});
-
 app.get('/key/:key', function (request, response) {
 	var FBrequest = require("request");
 	FBrequest('https://dazzling-torch-3393.firebaseio.com/SlidePrinting/'+request.param("key")+'.json', function(error, head, body) {
@@ -49,13 +45,15 @@ app.get('/key/:key', function (request, response) {
 				doc.fontSize(11.36);  //The Etel font requires printing at this size only for proper scanning on 203dpi thermal printers
 				doc.text(body.encodedCaseNum, 72*i + offset, 0); 
 				doc.moveDown(0.2);
-				doc.font('Helvetica');
-				doc.fontSize(7);
+
+				doc.font('Helvetica-Bold');
+				doc.fontSize(8);
 				doc.text(body.caseNum, 72*i + offset + 3);
+				doc.font('Helvetica')
 				doc.fontSize(7);
 				doc.text(body.slides[j*4 + i][0] + '          ' + body.slides[j*4 + i][1]);
 				doc.text(body.slides[j*4 + i][2]);
-				doc.text(body.patientName);
+				doc.text(prepName(body.patientName));
 				doc.fontSize(4);
 				doc.fontSize(7);
 				doc.text(body.collectionDate)
@@ -127,6 +125,15 @@ function getCheckDigit(code) {
   return setCCode(sum%103);
 }
 
+function prepName(name) {  //This function converts names to Title case, removes spaces, and limits the length for long names
+	var i;
+	i=name.replace(/ /g,'')
+	i = i.replace(/,/g,', ');
+	i = i.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})
+	i = i.replace(/ /g,'')
+	i = i.substring(0,18)
+	return i;
+}
 
 var codeBTable = { "95":"À", "À":95,
                    "96":"Á", "Á":96, 
@@ -141,3 +148,4 @@ var codeBTable = { "95":"À", "À":95,
                    "105":"Ê", "Ê":105,
                    "106":"Ë", "Ë":106,
                    "204":"Ì", "Ì":0 };
+
