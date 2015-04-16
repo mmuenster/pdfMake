@@ -39,7 +39,7 @@ app.get('/key/:key', function (request, response) {
 			var pageLength = (j+1) < pages  ? 4 : (body.slides.length-(j*4)<4 ? (body.slides.length - j*4) : 4);
 			
 			//console.log("pageLength=", pageLength);
-			offset=5;
+			offset=0;
 			for(var i=0; i<pageLength; i++) {
 				doc.font(barcodeFont);  
 				doc.fontSize(11.36);  //The Etel font requires printing at this size only for proper scanning on 203dpi thermal printers
